@@ -31,7 +31,7 @@ public struct BatchNorm<Scalar: TensorFlowFloatingPoint>: Layer {
     /// The scale value, also known as gamma.
     public var scale: Tensor<Scalar>
     /// The variance epsilon value.
-    @noDerivative public let epsilon: Tensor<Scalar>
+    @noDerivative public let epsilon: Scalar
     /// The running mean.
     @noDerivative public let runningMean: Parameter<Scalar>
     /// The running variance.
@@ -52,7 +52,7 @@ public struct BatchNorm<Scalar: TensorFlowFloatingPoint>: Layer {
         momentum: Tensor<Scalar>,
         offset: Tensor<Scalar>,
         scale: Tensor<Scalar>,
-        epsilon: Tensor<Scalar>,
+        epsilon: Scalar,
         runningMean: Tensor<Scalar>,
         runningVariance: Tensor<Scalar>
     ) {
@@ -106,7 +106,7 @@ public struct BatchNorm<Scalar: TensorFlowFloatingPoint>: Layer {
         featureCount: Int,
         axis: Int = -1,
         momentum: Tensor<Scalar> = Tensor(0.99),
-        epsilon: Tensor<Scalar> = Tensor(0.001)
+        epsilon: Scalar = 0.001
     ) {
         self.init(
             axis: axis,
@@ -131,14 +131,14 @@ public struct LayerNorm<Scalar: TensorFlowFloatingPoint>: Layer {
     /// The axis.
     @noDerivative public let axis: Int
     /// The variance epsilon value.
-    @noDerivative public let epsilon: Tensor<Scalar>
+    @noDerivative public let epsilon: Scalar
 
     /// Creates a layer normalization layer.
     public init(
         offset: Tensor<Scalar>,
         scale: Tensor<Scalar>,
         axis: Int,
-        epsilon: Tensor<Scalar>
+        epsilon: Scalar
     ) {
         self.offset = offset
         self.scale = scale
@@ -155,7 +155,7 @@ public struct LayerNorm<Scalar: TensorFlowFloatingPoint>: Layer {
     public init(
         featureCount: Int,
         axis: Int,
-        epsilon: Tensor<Scalar> = Tensor(0.001)
+        epsilon: Scalar = 0.001
     ) {
         self.init(
             offset: Tensor(zeros: [featureCount]),
