@@ -53,6 +53,10 @@ public struct Conv1D<Scalar: TensorFlowFloatingPoint>: Layer {
         padding: Padding = .valid,
         dilation: Int = 1
     ) {
+        precondition(filter.shape.rank == 3, "The filter must have rank 3.")
+        precondition(bias.shape.rank == 1, "The bias must have rank 1.")
+        precondition(filter.shape[2] == bias.shape[0],
+                     "The number of output features doesn't match between filter and bias.")
         self.filter = filter
         self.bias = bias
         self.activation = activation
@@ -162,6 +166,10 @@ public struct Conv2D<Scalar: TensorFlowFloatingPoint>: Layer {
         padding: Padding = .valid,
         dilations: (Int, Int) = (1, 1)
     ) {
+        precondition(filter.shape.rank == 4, "The filter must have rank 4.")
+        precondition(bias.shape.rank == 1, "The bias must have rank 1.")
+        precondition(filter.shape[3] == bias.shape[0],
+                     "The number of output features doesn't match between filter and bias.")
         self.filter = filter
         self.bias = bias
         self.activation = activation
@@ -280,6 +288,10 @@ public struct Conv3D<Scalar: TensorFlowFloatingPoint>: Layer {
         padding: Padding = .valid,
         dilations: (Int, Int, Int) = (1, 1, 1)
     ) {
+        precondition(filter.shape.rank == 5, "The filter must have rank 5.")
+        precondition(bias.shape.rank == 1, "The bias must have rank 1.")
+        precondition(filter.shape[4] == bias.shape[0],
+                     "The number of output features doesn't match between filter and bias.")
         precondition(dilations.2 == 1,
                      "Dilations in the depth dimension must be 1.")
         self.filter = filter
@@ -401,6 +413,10 @@ public struct TransposedConv1D<Scalar: TensorFlowFloatingPoint>: Layer {
         stride: Int = 1,
         padding: Padding = .valid
     ) {
+        precondition(filter.shape.rank == 3, "The filter must have rank 3.")
+        precondition(bias.shape.rank == 1, "The bias must have rank 1.")
+        precondition(filter.shape[1] == bias.shape[0],
+                     "The number of output features doesn't match between filter and bias.")
         self.filter = filter
         self.bias = bias
         self.activation = activation
@@ -498,6 +514,10 @@ public struct TransposedConv2D<Scalar: TensorFlowFloatingPoint>: Layer {
         strides: (Int, Int) = (1, 1),
         padding: Padding = .valid
     ) {
+        precondition(filter.shape.rank == 4, "The filter must have rank 4.")
+        precondition(bias.shape.rank == 1, "The bias must have rank 1.")
+        precondition(filter.shape[2] == bias.shape[0],
+                     "The number of output features doesn't match between filter and bias.")
         self.filter = filter
         self.bias = bias
         self.activation = activation
@@ -598,6 +618,10 @@ public struct TransposedConv3D<Scalar: TensorFlowFloatingPoint>: Layer {
         strides: (Int, Int, Int) = (1, 1, 1),
         padding: Padding = .valid
     ) {
+        precondition(filter.shape.rank == 5, "The filter must have rank 5.")
+        precondition(bias.shape.rank == 1, "The bias must have rank 1.")
+        precondition(filter.shape[3] == bias.shape[0],
+                     "The number of output features doesn't match between filter and bias.")
         self.filter = filter
         self.bias = bias
         self.activation = activation
@@ -696,6 +720,8 @@ public struct DepthwiseConv2D<Scalar: TensorFlowFloatingPoint>: Layer {
         strides: (Int, Int) = (1, 1),
         padding: Padding = .valid
     ) {
+        precondition(filter.shape.rank == 4, "The filter must have rank 4.")
+        precondition(bias.shape.rank == 1, "The bias must have rank 1.")
         self.filter = filter
         self.bias = bias
         self.activation = activation
@@ -760,6 +786,8 @@ public struct ZeroPadding1D<Scalar: TensorFlowFloatingPoint>: ParameterlessLayer
     /// - Parameter padding: A tuple of two integers describing how many zeros to be padded at the
     ///   beginning and end of the padding dimension.
     public init(padding: (Int, Int)) {
+        precondition(padding.0 >= 0 && padding.1 >= 0,
+                     "The paddings must be positive number.")
         self.padding = padding
     }
 
@@ -791,6 +819,9 @@ public struct ZeroPadding2D<Scalar: TensorFlowFloatingPoint>: ParameterlessLayer
     /// - Parameter padding: A tuple of 2 tuples of two integers describing how many zeros to
     ///   be padded at the beginning and end of each padding dimensions.
     public init(padding: ((Int, Int), (Int, Int))) {
+        precondition(padding.0.0 >= 0 && padding.0.1 >= 0
+            && padding.1.0 >= 0 && padding.1.1 >= 0,
+            "The paddings must be positive number.")
         self.padding = padding
     }
 
@@ -823,6 +854,10 @@ public struct ZeroPadding3D<Scalar: TensorFlowFloatingPoint>: ParameterlessLayer
     /// - Parameter padding: A tuple of 3 tuples of two integers describing how many zeros to
     ///   be padded at the beginning and end of each padding dimensions.
     public init(padding: ((Int, Int), (Int, Int), (Int, Int))) {
+        precondition(padding.0.0 >= 0 && padding.0.1 >= 0
+            && padding.1.0 >= 0 && padding.1.1 >= 0
+            && padding.2.0 >= 0 && padding.2.1 >= 0,
+                     "The paddings must be positive number.")
         self.padding = padding
     }
 
@@ -887,6 +922,15 @@ public struct SeparableConv1D<Scalar: TensorFlowFloatingPoint>: Layer {
         stride: Int = 1,
         padding: Padding = .valid
     ) {
+        precondition(depthwiseFilter.shape.rank == 3,
+                     "The depthwiseFilter must have rank 3.")
+        precondition(pointwiseFilter.shape.rank == 3,
+                     "The pointwiseFilter must have rank 3.")
+        precondition(pointwiseFilter.shape[0] == 1,
+                     "The pointwiseFilter must have kernel size 1.")
+        precondition(bias.shape.rank == 1, "The bias must have rank 1.")
+        precondition(pointwiseFilter.shape[2] == bias.shape[0],
+                     "The number of output features doesn't match between pointwiseFilter and bias.")
         self.depthwiseFilter = depthwiseFilter
         self.pointwiseFilter = pointwiseFilter
         self.bias = bias
@@ -994,6 +1038,15 @@ public struct SeparableConv2D<Scalar: TensorFlowFloatingPoint>: Layer {
         strides: (Int, Int) = (1, 1),
         padding: Padding = .valid
     ) {
+        precondition(depthwiseFilter.shape.rank == 4,
+                     "The depthwiseFilter must have rank 4.")
+        precondition(pointwiseFilter.shape.rank == 4,
+                     "The pointwiseFilter must have rank 4.")
+        precondition(pointwiseFilter.shape[0] == 1 && pointwiseFilter.shape[1] == 1,
+                     "The pointwiseFilter must have kernel size 1.")
+        precondition(bias.shape.rank == 1, "The bias must have rank 1.")
+        precondition(pointwiseFilter.shape[3] == bias.shape[0],
+                     "The number of output features doesn't match between pointwiseFilter and bias.")
         self.depthwiseFilter = depthwiseFilter
         self.pointwiseFilter = pointwiseFilter
         self.bias = bias
